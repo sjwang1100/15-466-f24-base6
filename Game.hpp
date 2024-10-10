@@ -24,6 +24,18 @@ struct Button {
 	bool pressed = false; //is the button pressed now
 };
 
+enum chesspcs {
+	W_Rock,
+	W_Paper,
+	W_Scissors,
+	W_Q,
+	B_Rock,
+	B_Paper,
+	B_Scissors,
+	B_Q
+};
+
+
 //state of one player in the game:
 struct Player {
 	//player inputs (sent from client):
