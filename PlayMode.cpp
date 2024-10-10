@@ -95,7 +95,7 @@ PlayMode::PlayMode(Client &client_) : client(client_), scene(*empty_scene) {
 		glm::radians(-90.0f),
 		glm::vec3(1.0f, 0.0f, 0.0f));
 
-	highlight_square(3, 2);
+	//highlight_square(3, 2);
 }
 
 PlayMode::~PlayMode() {
@@ -106,6 +106,8 @@ PlayMode::~PlayMode() {
 	//	delete i;
 	//}
 }
+
+glm::u8vec2 tempBLK = glm::u8vec2(0, 0);
 
 bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
 
@@ -212,6 +214,18 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 					}
 				}
 			}
+			glm::u8vec2 blk = map_to_index(mousex, mousey);
+			if (blk.x < 4 && blk.x >= 0 && blk.y < 4 && blk.y >= 0) {
+				if (blk != tempBLK) {
+					unhighlight_square(tempBLK.x, tempBLK.y);
+					tempBLK = blk;
+					highlight_square(blk.x, blk.y);
+				}
+				
+			}
+			else {
+				unhighlight_square(blk.x, blk.y);
+			}
 		}
 	}
 	else if (evt.type == SDL_MOUSEBUTTONDOWN) {
@@ -220,6 +234,9 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 	}
 	else if (evt.type == SDL_MOUSEBUTTONUP) {
 		mouse_hold = false;
+		if (dragging != -1) {
+
+		}
 		dragging = -1;
 		map_to_index(mousex, mousey);
 		return true;
@@ -311,19 +328,19 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 		));
 
 		constexpr float H = 0.09f;
-		lines.draw_text("Mouse motion looks; WASD moves; escape ungrabs mouse",
+		/*lines.draw_text("Mouse motion looks; WASD moves; escape ungrabs mouse",
 			glm::vec3(-aspect + 0.1f * H, -1.0 + 0.1f * H, 0.0),
 			glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
-			glm::u8vec4(0x00, 0x00, 0x00, 0x00));
+			glm::u8vec4(0x00, 0x00, 0x00, 0x00));*/
 		float ofs = 2.0f / drawable_size.y;
-		lines.draw_text("Mouse motion looks; WASD moves; escape ungrabs mouse",
+		lines.draw_text("For now, use mouse to drag pieces to the board",
 			glm::vec3(-aspect + 0.1f * H + ofs, -1.0 + +0.1f * H + ofs, 0.0),
 			glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
 			glm::u8vec4(0xff, 0xff, 0xff, 0x00));
-		lines.draw_text("Height: " + std::to_string(1),
-			glm::vec3(-aspect + 0.1f * H + ofs, /*-1.0 + + 0.1f * H + ofs*/0.9, 0.0),
-			glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
-			glm::u8vec4(0xff, 0xff, 0xff, 0x00));
+		//lines.draw_text("Height: " + std::to_string(1),
+		//	glm::vec3(-aspect + 0.1f * H + ofs, /*-1.0 + + 0.1f * H + ofs*/0.9, 0.0),
+		//	glm::vec3(H, 0.0f, 0.0f), glm::vec3(0.0f, H, 0.0f),
+		//	glm::u8vec4(0xff, 0xff, 0xff, 0x00));
 	}
 	GL_ERRORS();
 	//static std::array< glm::vec2, 16 > const circle = [](){
@@ -495,6 +512,9 @@ void PlayMode::highlight_square(uint8_t x, uint8_t y) {
 	std::advance(it, index);
 	/*it++;
 	it++;*/
+	if (temp_dr != nullptr) {
+		return;		//should be something else
+	}
 
 	glm::vec3 tempPOS = it->transform->position;
 	// not from ChatGPT
@@ -515,6 +535,10 @@ void PlayMode::highlight_square(uint8_t x, uint8_t y) {
 }
 
 void PlayMode::unhighlight_square(uint8_t x, uint8_t y) {
+	if (temp_dr == nullptr) {
+		return;
+	}
+
 	x++;
 	uint8_t index = 4 * (3 - y) + x;
 
@@ -527,6 +551,7 @@ void PlayMode::unhighlight_square(uint8_t x, uint8_t y) {
 
 	std::swap(*it, *temp_dr);
 	delete temp_dr;
+	temp_dr = nullptr;
 }
 
 uint8_t PlayMode::map_to_index(float x, float y) {
