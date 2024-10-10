@@ -21,3 +21,6 @@ dist/freetype-test*
 scenes/show-meshes*
 scenes/show-scene*
 *.blend[0-9]
+.vs
+dist/client.pdb
+dist/server.pdb
