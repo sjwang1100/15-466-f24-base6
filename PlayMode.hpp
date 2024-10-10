@@ -32,6 +32,7 @@ struct PlayMode : Mode {
 
 	bool drag_mode = false;
 	bool mouse_hold = false;
+	int8_t dragging = -1;
 	uint32_t mousex, mousey;
 
 	//----- game state -----

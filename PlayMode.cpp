@@ -154,11 +154,17 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 	else if (mouse_hold && evt.type == SDL_MOUSEMOTION ) {
 		mousex = evt.motion.x;
 		mousey = evt.motion.y;
-		//std::cout << mousex << " "<< mousey << std::endl;
+		std::cout << mousex << " "<< mousey << std::endl;
 		if (drag_mode) {
-			if (mouse_hold && mousex > 96 && mousex < 225) {
+			if ((mouse_hold && mousex > 96 && mousex < 225) || dragging != -1) {
 				uint8_t temp = 0;
-				temp = (uint8_t)((float)mousey / 133.25f);
+				if (dragging == -1) {
+
+					temp = (uint8_t)(((float)mousey - 90.0f) / 133.25f);
+					dragging = temp;
+				}
+				else temp = dragging;
+				
 				if (is_black) {
 					switch (temp)
 					{
@@ -214,6 +220,7 @@ bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size)
 	}
 	else if (evt.type == SDL_MOUSEBUTTONUP) {
 		mouse_hold = false;
+		dragging = -1;
 		map_to_index(mousex, mousey);
 		return true;
 	}
@@ -464,16 +471,16 @@ void PlayMode::move_board(float elapsed) {
 
 void PlayMode::chessman_choose() {
 	if (is_black) {
-		add_chessman(4, glm::vec3(0.5f, -4.5f, 0.1f));
-		add_chessman(5, glm::vec3(1.2f, -4.4f, 0.1f));
-		add_chessman(6, glm::vec3(2.6f, -4.5f, 0.1f));
-		add_chessman(7, glm::vec3(3.7f, -4.7f, 0.1f));
+		add_chessman(4, glm::vec3(0.5f, -4.5f, 0.2f));
+		add_chessman(5, glm::vec3(1.2f, -4.4f, 0.2f));
+		add_chessman(6, glm::vec3(2.6f, -4.5f, 0.2f));
+		add_chessman(7, glm::vec3(3.7f, -4.7f, 0.2f));
 	}
 	else {
-		add_chessman(0, glm::vec3(0.5f, -4.5f, 0.1f));
-		add_chessman(1, glm::vec3(1.2f, -4.4f, 0.1f));
-		add_chessman(2, glm::vec3(2.6f, -4.5f, 0.1f));
-		add_chessman(3, glm::vec3(3.7f, -4.7f, 0.1f));
+		add_chessman(0, glm::vec3(0.5f, -4.5f, 0.2f));
+		add_chessman(1, glm::vec3(1.2f, -4.4f, 0.2f));
+		add_chessman(2, glm::vec3(2.6f, -4.5f, 0.2f));
+		add_chessman(3, glm::vec3(3.7f, -4.7f, 0.2f));
 	}
 	
 }
